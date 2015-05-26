@@ -6,8 +6,10 @@ $(function(){
 		var isZoom = false;
 		var thumbWidth = 0;
 		var thumbStripWidth = 0;
+		var thumbPerPage = 0;
 		var scrollOffset = 0;
 		var selectedIndex = 0;
+		var currentPage = 0;
 		var scrollAnimationTime = 700;
 
 		yajiv.setup = function(_gallery, _galleryTitle) {	
@@ -84,28 +86,36 @@ $(function(){
 
 
 			var scrollPageLeft = function() {
-				scrollOffset = $("#gallery-thumbnail-strip").scrollLeft();
-				var newScroll =  scrollOffset - Math.floor(thumbStripWidth/thumbWidth) * thumbWidth;
-				newScroll = Math.floor(newScroll/thumbWidth) * thumbWidth;
-				performScroll(newScroll);
+				if (--currentPage < 0) {
+					currentPage = 0;
+				} else {
+					performScroll();	
+				}
 			}
 
 			var scrollPageRight = function() {
-				scrollOffset = $("#gallery-thumbnail-strip").scrollLeft();
-				var newScroll = (Math.floor((scrollOffset+thumbStripWidth) / thumbWidth)) * thumbWidth;
-				performScroll(newScroll);
+				if (++currentPage > Math.floor(gallery.length / thumbPerPage)) {
+					--currentPage;
+				} else {
+					performScroll();	
+				}
+				
 			}
 
-			var performScroll = function(newScroll) {
+			var performScroll = function() {
+				selectedIndex = currentPage * thumbPerPage;
+				var newScroll = selectedIndex * thumbWidth;		
+				
 				$( "#gallery-thumbnail-strip" ).animate({
 					scrollLeft: newScroll,
 					}, scrollAnimationTime, function() {
-					// Animation complete.
+						// Animation complete.
+						setImageToSelected();
 				});
 			}
 
 			$('#left-page-button').click(function() {
-				scrollPageLeft()				
+				scrollPageLeft()
 			});
 
 			$('#right-page-button').click(function() {
@@ -134,9 +144,11 @@ $(function(){
 		var calculatePages = function() {
 
 			thumbStripWidth = Math.floor($('.modal-content').width() - 200);
-
 			$("#gallery-thumbnail-strip").width(thumbStripWidth + 'px');
-			thumbWidth = $("#gallery-strip div:first").width();	
+			thumbWidth = $("#gallery-strip div:first").width();
+
+			thumbPerPage = Math.floor(thumbStripWidth/thumbWidth);
+			console.log(thumbPerPage);
 		}
 
 		var resizeModal = function() {
