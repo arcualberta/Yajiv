@@ -90,6 +90,8 @@ $(function(){
 					currentPage = 0;
 				} else {
 					performScroll();	
+					selectedIndex = currentPage * thumbPerPage;
+					setImageToSelected();
 				}
 			}
 
@@ -98,21 +100,12 @@ $(function(){
 					--currentPage;
 				} else {
 					performScroll();	
+					selectedIndex = currentPage * thumbPerPage;
+					setImageToSelected();
 				}
-				
 			}
 
-			var performScroll = function() {
-				selectedIndex = currentPage * thumbPerPage;
-				var newScroll = selectedIndex * thumbWidth;		
-				
-				$( "#gallery-thumbnail-strip" ).animate({
-					scrollLeft: newScroll,
-					}, scrollAnimationTime, function() {
-						// Animation complete.
-						setImageToSelected();
-				});
-			}
+			
 
 			$('#left-page-button').click(function() {
 				scrollPageLeft()
@@ -124,6 +117,17 @@ $(function(){
 
 		}
 
+		var performScroll = function() {
+			
+			var newScroll = currentPage * thumbPerPage * thumbWidth;		
+			
+			$( "#gallery-thumbnail-strip" ).animate({
+				scrollLeft: newScroll,
+				}, scrollAnimationTime, function() {
+					// Animation complete.
+			});
+		};
+
 		var setZoom = function() {
 			if (isZoom) {
 				$("#gallery-image").css('max-height', $('#gallery-image')[0].naturalHeight);
@@ -131,14 +135,11 @@ $(function(){
 				$("#zoom-button span").removeClass("glyphicon-zoom-in");
 				$("#zoom-button span").addClass("glyphicon-zoom-out");
 			} else {
-
 				$("#gallery-image").css('max-height', Math.floor($('.modal-content').height() * 0.80 -60) + 'px');
 				$("#gallery-image").css('max-width', Math.floor($('.modal-content').width() * 0.80) + 'px');					
 				$("#zoom-button span").removeClass("glyphicon-zoom-out");
 				$("#zoom-button span").addClass("glyphicon-zoom-in");
 			}
-
-
 		}
 
 		var calculatePages = function() {
@@ -169,7 +170,14 @@ $(function(){
 			$("#gallery-strip div img").addClass('unselected-thumbnail');
 			$("#gallery-strip div:eq("+selectedIndex+") img").addClass('selected-thumbnail');
 			$("#gallery-image").attr("src", gallery[selectedIndex].image);
-			$('#download-button').attr('href', gallery[selectedIndex].image)
+			$('#download-button').attr('href', gallery[selectedIndex].image);
+
+
+			var selectedPage = Math.floor(selectedIndex / thumbPerPage);
+			if (currentPage != selectedPage){
+				currentPage = selectedPage;
+				performScroll();
+			}
 		}
 
 		yajiv.showGallery = function() {
