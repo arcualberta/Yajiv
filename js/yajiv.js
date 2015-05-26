@@ -27,12 +27,12 @@ $(function(){
 												'     </div>'+
 												'     <div class="modal-body">'+												
 												'     	<div id="left-container">'+
-												'					<button id="left-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button> '+
-												'					<button id="left-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button> '+
+												'					<button id="left-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span></button> '+
+												'					<button id="left-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></button> '+
 												'				</div>'+
 												'     	<div id="right-container">'+
-												'					<button id="right-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button> '+
-												'					<button id="right-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button> '+
+												'					<button id="right-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button> '+
+												'					<button id="right-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span></button> '+
 												'				</div>'+
 												'			<div id="gallery-viewport">'+
 												'				<img src="" id="gallery-image" />'+
