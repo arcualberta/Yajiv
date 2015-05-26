@@ -80,11 +80,7 @@ $(function(){
 				setImageToSelected();
 			});
 
-			var setToPage = function() {
-				performScroll();	
-				selectedIndex = currentPage * thumbPerPage;
-				setImageToSelected();
-			}
+
 
 			var scrollPageLeft = function() {
 				if (--currentPage < 0) {
@@ -142,9 +138,7 @@ $(function(){
 			thumbStripWidth = Math.floor($('.modal-content').width() - 200);
 			$("#gallery-thumbnail-strip").width(thumbStripWidth + 'px');
 			thumbWidth = $("#gallery-strip div:first").width();
-
 			thumbPerPage = Math.floor(thumbStripWidth/thumbWidth);
-			console.log(thumbPerPage);
 		}
 
 		var resizeModal = function() {
@@ -173,17 +167,56 @@ $(function(){
 				currentPage = selectedPage;
 				performScroll();
 			}
+
+			setEnabledButtons();
+
+		}
+
+		var setToPage = function() {
+			performScroll();	
+			selectedIndex = currentPage * thumbPerPage;
+			setImageToSelected();
+		}
+
+		var setEnabledButtons = function() {
+
+			if (currentPage == 0) {
+				$('#left-page-button').attr('disabled', 'disabled');
+			} else {
+				$('#left-page-button').removeAttr('disabled');
+			}
+
+			if (selectedIndex == 0) {
+				$('#left-button').attr('disabled', 'disabled');
+			} else {
+				$('#left-button').removeAttr('disabled');
+			}
+
+			if (selectedIndex == gallery.length -1) {
+				$('#right-button').attr('disabled', 'disabled');
+			} else {
+				$('#right-button').removeAttr('disabled');
+			}
+			
+			if (selectedIndex != 0 && currentPage == Math.floor(gallery.length / thumbPerPage) ) {
+				$('#right-page-button').attr('disabled', 'disabled');
+			} else {
+				$('#right-page-button').removeAttr('disabled');
+			}
+
 		}
 
 		yajiv.showGallery = function() {
 			
 			$('#galleryModal').modal('show');
-			resizeModal(); 
+			resizeModal(); 		
+	
 			$('#galleryModal').on('shown.bs.modal', function() {
 				selectedIndex = 0;
 				currentPage = 0;
-    		setImageToSelected();	
     		calculatePages();				
+    		setImageToSelected();	
+    		$("#gallery-thumbnail-strip").scrollLeft(0);
 			});	
 		}
 
