@@ -23,8 +23,6 @@ $(function(){
 												'     	<div id="close-container"><button id="close-button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></div>'+
 												'     	<div id="zoom-container"><button id="zoom-button" class="btn btn-success"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></button></div>'+
 												'     	<div id="download-container"><a download id="download-button" href="" class="btn btn-info"><span class="glyphicon glyphicon-download" aria-hidden="true"></span></a></div>'+
-
-												// '       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
 												'       <h4 class="modal-title">'+galleryTitle+'</h4>'+
 												'     </div>'+
 												'     <div class="modal-body">'+												
@@ -54,8 +52,7 @@ $(function(){
 			$("body").append($(modalString));
 
 			$(".gallery-thumbnail").click(function() {
-				// `this` is the DOM element that was clicked
-				selectedIndex = $(".gallery-thumbnail").index( this );
+				selectedIndex = $(".gallery-thumbnail").index(this);
 				setImageToSelected();
 			});
 
@@ -83,15 +80,17 @@ $(function(){
 				setImageToSelected();
 			});
 
-
+			var setToPage = function() {
+				performScroll();	
+				selectedIndex = currentPage * thumbPerPage;
+				setImageToSelected();
+			}
 
 			var scrollPageLeft = function() {
 				if (--currentPage < 0) {
 					currentPage = 0;
 				} else {
-					performScroll();	
-					selectedIndex = currentPage * thumbPerPage;
-					setImageToSelected();
+					setToPage();
 				}
 			}
 
@@ -99,13 +98,9 @@ $(function(){
 				if (++currentPage > Math.floor(gallery.length / thumbPerPage)) {
 					--currentPage;
 				} else {
-					performScroll();	
-					selectedIndex = currentPage * thumbPerPage;
-					setImageToSelected();
+					setToPage();
 				}
-			}
-
-			
+			}	
 
 			$('#left-page-button').click(function() {
 				scrollPageLeft()
@@ -184,10 +179,9 @@ $(function(){
 			
 			$('#galleryModal').modal('show');
 			resizeModal(); 
-			selectedIndex = 0;
-			setImageToSelected();
 			$('#galleryModal').on('shown.bs.modal', function() {
 				selectedIndex = 0;
+				currentPage = 0;
     		setImageToSelected();	
     		calculatePages();				
 			});	
