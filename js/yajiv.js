@@ -7,6 +7,9 @@ $(function(){
 		var thumbWidth = 0;
 		var thumbStripWidth = 0;
 		var scrollOffset = 0;
+		var selectedIndex = 0;
+		var scrollAnimationTime = 700;
+
 		yajiv.setup = function(_gallery, _galleryTitle) {	
 			gallery = _gallery;
 			galleryTitle = _galleryTitle
@@ -23,8 +26,14 @@ $(function(){
 												'       <h4 class="modal-title">'+galleryTitle+'</h4>'+
 												'     </div>'+
 												'     <div class="modal-body">'+												
-												'     	<div id="left-container"><button id="left-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button></div>'+
-												'     	<div id="right-container"><button id="right-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button></div>'+
+												'     	<div id="left-container">'+
+												'					<button id="left-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button> '+
+												'					<button id="left-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button> '+
+												'				</div>'+
+												'     	<div id="right-container">'+
+												'					<button id="right-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button> '+
+												'					<button id="right-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button> '+
+												'				</div>'+
 												'			<div id="gallery-viewport">'+
 												'				<img src="" id="gallery-image" />'+
 												'			</div>'+
@@ -44,8 +53,8 @@ $(function(){
 
 			$(".gallery-thumbnail").click(function() {
 				// `this` is the DOM element that was clicked
-				var index = $(".gallery-thumbnail").index( this );
-				setImage(index);
+				selectedIndex = $(".gallery-thumbnail").index( this );
+				setImageToSelected();
 			});
 
 			$('#gallery-viewport').click(function(){
@@ -58,90 +67,108 @@ $(function(){
 				setZoom();
 			});
 
-			$('#left-button').click(function() {
-				scrollOffset = $("#gallery-thumbnail-strip").scrollLeft();
-				// var newScroll = (Math.floor((scrollOffset-thumbStripWidth) / thumbWidth)) * thumbWidth;
-				var newScroll =  scrollOffset - Math.floor(thumbStripWidth/thumbWidth) * thumbWidth;
-				newScroll = Math.floor(newScroll/thumbWidth) * thumbWidth;
-				// $("#gallery-thumbnail-strip").scrollLeft(newScroll);
-				$( "#gallery-thumbnail-strip" ).animate({
-					scrollLeft: newScroll,
-					}, 700, function() {
-					// Animation complete.
-				});
+			$('#left-button').click(function(){
+				if (--selectedIndex < 0) {
+					selectedIndex = 0;
+				}
+				setImageToSelected();
 			});
 
-			$('#right-button').click(function() {
+			$('#right-button').click(function(){
+				if (++selectedIndex >= gallery.length) {
+					selectedIndex = gallery.length-1;
+				}
+				setImageToSelected();
+			});
+
+
+
+			var scrollPageLeft = function() {
+				scrollOffset = $("#gallery-thumbnail-strip").scrollLeft();
+				var newScroll =  scrollOffset - Math.floor(thumbStripWidth/thumbWidth) * thumbWidth;
+				newScroll = Math.floor(newScroll/thumbWidth) * thumbWidth;
+				performScroll(newScroll);
+			}
+
+			var scrollPageRight = function() {
 				scrollOffset = $("#gallery-thumbnail-strip").scrollLeft();
 				var newScroll = (Math.floor((scrollOffset+thumbStripWidth) / thumbWidth)) * thumbWidth;
-				// $("#gallery-thumbnail-strip").scrollLeft(newScroll);
+				performScroll(newScroll);
+			}
+
+			var performScroll = function(newScroll) {
 				$( "#gallery-thumbnail-strip" ).animate({
 					scrollLeft: newScroll,
-					}, 700, function() {
+					}, scrollAnimationTime, function() {
 					// Animation complete.
 				});
+			}
+
+			$('#left-page-button').click(function() {
+				scrollPageLeft()				
+			});
+
+			$('#right-page-button').click(function() {
+				scrollPageRight();
 			});
 
 		}
 
 		var setZoom = function() {
 			if (isZoom) {
-				// $("#gallery-image").addClass("zoom-in");
-				// $("#gallery-image").parent().addClass("dummy-class").removeClass('dummy-class');
 				$("#gallery-image").css('max-height', $('#gallery-image')[0].naturalHeight);
-				$("#gallery-image").css('max-width', $('#gallery-image')[0].naturalWidth);
-				
+				$("#gallery-image").css('max-width', $('#gallery-image')[0].naturalWidth);				
 				$("#zoom-button span").removeClass("glyphicon-zoom-in");
 				$("#zoom-button span").addClass("glyphicon-zoom-out");
 			} else {
-				// $("#gallery-image").removeClass("zoom-in");
-				// $("#gallery-image").parent().addClass("dummy-class").removeClass('dummy-class');
+
 				$("#gallery-image").css('max-height', Math.floor($('.modal-content').height() * 0.80 -60) + 'px');
-				$("#gallery-image").css('max-width', Math.floor($('.modal-content').width() * 0.80) + 'px');	
-				
+				$("#gallery-image").css('max-width', Math.floor($('.modal-content').width() * 0.80) + 'px');					
 				$("#zoom-button span").removeClass("glyphicon-zoom-out");
 				$("#zoom-button span").addClass("glyphicon-zoom-in");
 			}
 
-			// $("#gallery-viewport").css('max-height', Math.floor($('.modal-content').height() * 0.80 -60) + 'px');	
 
 		}
 
 		var calculatePages = function() {
 
-			thumbStripWidth = $("#gallery-thumbnail-strip").width();
-			// scrollOffset = $("#gallery-thumbnail-strip").scrollLeft();
-			thumbWidth = $("#gallery-strip div:first").width();
-	
+			thumbStripWidth = Math.floor($('.modal-content').width() - 200);
+
+			$("#gallery-thumbnail-strip").width(thumbStripWidth + 'px');
+			thumbWidth = $("#gallery-strip div:first").width();	
 		}
 
 		var resizeModal = function() {
 			$('.modal-dialog').css('width', '95%')
 			$('.modal-content').css('height', Math.floor($(window).height() * 0.90) + 'px')
 			setZoom();
-			$(".gallery-thumbnail").css('max-height', Math.floor($('.modal-content').height() * 0.23 -60)	+ 'px');
+			var thumbnailSize = Math.floor($('.modal-content').height() * 0.23 -60)	+ 'px';
+			$(".gallery-thumbnail").css('height', thumbnailSize);
+			$(".gallery-thumbnail").css('width', thumbnailSize);
 			calculatePages();
 			$("#gallery-viewport").css('max-height', Math.floor($('.modal-content').height() * 0.80 -60) + 'px');	
-			// $("#gallery-viewport").parent().addClass('dummy-class').removeClass('dummy-class');
 		}
 
-		var setImage = function(index) {
+		var setImageToSelected = function() {
 			isZoom = false;
 			setZoom();
-			$("#gallery-strip li img").removeClass('selected-thumbnail');
-			$("#gallery-strip li img").addClass('unselected-thumbnail');
-			$("#gallery-strip li:eq("+index+") img").addClass('selected-thumbnail');
-			$("#gallery-image").attr("src", gallery[index].image);
-			$('#download-button').attr('href', gallery[index].image)
+			$("#gallery-strip div img").removeClass('selected-thumbnail');
+			$("#gallery-strip div img").addClass('unselected-thumbnail');
+			$("#gallery-strip div:eq("+selectedIndex+") img").addClass('selected-thumbnail');
+			$("#gallery-image").attr("src", gallery[selectedIndex].image);
+			$('#download-button').attr('href', gallery[selectedIndex].image)
 		}
 
 		yajiv.showGallery = function() {
 			
 			$('#galleryModal').modal('show');
 			resizeModal(); 
-			setImage(0);
+			selectedIndex = 0;
+			setImageToSelected();
 			$('#galleryModal').on('shown.bs.modal', function() {
-    		setImage(0);	
+				selectedIndex = 0;
+    		setImageToSelected();	
     		calculatePages();				
 			});	
 		}

@@ -32,7 +32,6 @@
 }
 
 #gallery-thumbnail-strip {
-	width: 90%;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -61,6 +60,11 @@
 	float: right;
 	margin-right: 5px;
 	color:#FFF !important;
+
+}
+
+#download-container a{
+	color:#FFF !important;
 }
 
 #close-container {
@@ -83,10 +87,10 @@
 }
 
 .gallery-thumbnail {
-
 	border-style: solid;
 	border-width: 2px;
 	border-color: #FFF;
+	overflow: hidden;
 }
 
 .zoom-in {
