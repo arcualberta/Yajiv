@@ -29,12 +29,12 @@ $(function(){
 												'				<img src="" id="gallery-image" />'+
 												'			</div>'+
 												'			<div id="gallery-thumbnail-strip">'+
-												'				<ul id="gallery-strip">';
+												'				<div id="gallery-strip">';
 			$.each(gallery, function(i, v){
-				modalString += '<li><img class="gallery-thumbnail unselected-thumbnail" src="'+v.thumbnail+'" /></li>';
+				modalString += '<div> <img class="gallery-thumbnail unselected-thumbnail" src="'+v.thumbnail+'" />  </div>';
 			});
 
-			modalString +=		'			</div>'+
+			modalString +=		'			</div></div>'+
 												'   </div>'+
 												' </div>'+
 												'</div>';
@@ -111,7 +111,7 @@ $(function(){
 
 			thumbStripWidth = $("#gallery-thumbnail-strip").width();
 			// scrollOffset = $("#gallery-thumbnail-strip").scrollLeft();
-			thumbWidth = $("#gallery-strip li:first").width();
+			thumbWidth = $("#gallery-strip div:first").width();
 	
 		}
 
