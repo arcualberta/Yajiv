@@ -26,6 +26,9 @@ $(function(){
 												'       <h4 class="modal-title">'+galleryTitle+'</h4>'+
 												'     </div>'+
 												'     <div class="modal-body">'+												
+												'			<div id="gallery-viewport">'+
+												'				<img src="" id="gallery-image" />'+
+												'			</div>'+
 												'     	<div id="left-container">'+
 												'					<button id="left-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span></button> '+
 												'					<button id="left-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></button> '+
@@ -34,18 +37,17 @@ $(function(){
 												'					<button id="right-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button> '+
 												'					<button id="right-page-button" href="" class="btn btn-primary"><span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span></button> '+
 												'				</div>'+
-												'			<div id="gallery-viewport">'+
-												'				<img src="" id="gallery-image" />'+
-												'			</div>'+
 												'			<div id="gallery-thumbnail-strip">'+
 												'				<div id="gallery-strip">';
 			$.each(gallery, function(i, v){
 				modalString += '<div> <img class="gallery-thumbnail unselected-thumbnail" src="'+v.thumbnail+'" />  </div>';
 			});
 
-			modalString +=		'			</div></div>'+
-												'   </div>'+
-												' </div>'+
+			modalString +=		'					</div>'+
+												'				</div>'+
+												'			</div>'+
+												'		</div>'+
+												'	</div>'+
 												'</div>';
 
 			
@@ -66,18 +68,26 @@ $(function(){
 				setZoom();
 			});
 
-			$('#left-button').click(function(){
+			var leftMove = function() {
 				if (--selectedIndex < 0) {
 					selectedIndex = 0;
 				}
 				setImageToSelected();
-			});
-
-			$('#right-button').click(function(){
+			}
+			
+			var rightMove = function() {
 				if (++selectedIndex >= gallery.length) {
 					selectedIndex = gallery.length-1;
 				}
 				setImageToSelected();
+			}
+
+			$('#left-button').click(function(){
+				leftMove()
+			});
+
+			$('#right-button').click(function(){
+				rightMove();
 			});
 
 
@@ -104,6 +114,31 @@ $(function(){
 
 			$('#right-page-button').click(function() {
 				scrollPageRight();
+			});
+
+			$(document).keydown(function(e) {
+				switch(e.which) {
+					case 37: // left
+						leftMove();
+					break;
+
+					case 38: // up
+						isZoom = true;
+						setZoom();
+					break;
+
+					case 39: // right
+						rightMove();
+					break;
+
+					case 40: // down
+						isZoom = false;
+						setZoom();
+					break;
+
+					default: return; // exit this handler for other keys
+				}
+				e.preventDefault(); // prevent the default action (scroll / move caret)
 			});
 
 		}
@@ -149,7 +184,7 @@ $(function(){
 			$(".gallery-thumbnail").css('height', thumbnailSize);
 			$(".gallery-thumbnail").css('width', thumbnailSize);
 			calculatePages();
-			$("#gallery-viewport").css('max-height', Math.floor($('.modal-content').height() * 0.80 -60) + 'px');	
+			$("#gallery-viewport").css('height', Math.floor($('.modal-content').height() * 0.80 -60) + 'px');	
 		}
 
 		var setImageToSelected = function() {
